@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B3F03E6F00217AF26BD8406B /* Pods_TensorFlowLiteDemoObjC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4211E19D87AEA63352AFED1 /* Pods_TensorFlowLiteDemoObjC.framework */; };
 		E303830622FB082500FA094D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E303830522FB082500FA094D /* AppDelegate.m */; };
 		E303830922FB082500FA094D /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E303830822FB082500FA094D /* ViewController.m */; };
 		E303830C22FB082500FA094D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E303830A22FB082500FA094D /* Main.storyboard */; };
@@ -16,6 +17,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0754417CFEF7C5D4A0C84B76 /* Pods-TensorFlowLiteDemoObjC.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TensorFlowLiteDemoObjC.debug.xcconfig"; path = "Target Support Files/Pods-TensorFlowLiteDemoObjC/Pods-TensorFlowLiteDemoObjC.debug.xcconfig"; sourceTree = "<group>"; };
+		DB5BCB0A97E0C2683D90B1E7 /* Pods-TensorFlowLiteDemoObjC.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TensorFlowLiteDemoObjC.release.xcconfig"; path = "Target Support Files/Pods-TensorFlowLiteDemoObjC/Pods-TensorFlowLiteDemoObjC.release.xcconfig"; sourceTree = "<group>"; };
 		E303830122FB082500FA094D /* TensorFlowLiteDemoObjC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TensorFlowLiteDemoObjC.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E303830422FB082500FA094D /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		E303830522FB082500FA094D /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -26,6 +29,7 @@
 		E303831022FB082800FA094D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E303831222FB082800FA094D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E303831322FB082800FA094D /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		F4211E19D87AEA63352AFED1 /* Pods_TensorFlowLiteDemoObjC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TensorFlowLiteDemoObjC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -33,17 +37,38 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B3F03E6F00217AF26BD8406B /* Pods_TensorFlowLiteDemoObjC.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		10C3A7852120393EFA175464 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F4211E19D87AEA63352AFED1 /* Pods_TensorFlowLiteDemoObjC.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A3B9EC1F49232FD6FEBC7C2B /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				0754417CFEF7C5D4A0C84B76 /* Pods-TensorFlowLiteDemoObjC.debug.xcconfig */,
+				DB5BCB0A97E0C2683D90B1E7 /* Pods-TensorFlowLiteDemoObjC.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		E30382F822FB082500FA094D = {
 			isa = PBXGroup;
 			children = (
 				E303830322FB082500FA094D /* TensorFlowLiteDemoObjC */,
 				E303830222FB082500FA094D /* Products */,
+				A3B9EC1F49232FD6FEBC7C2B /* Pods */,
+				10C3A7852120393EFA175464 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -78,6 +103,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = E303831722FB082800FA094D /* Build configuration list for PBXNativeTarget "TensorFlowLiteDemoObjC" */;
 			buildPhases = (
+				A852CDDAA3A3FD85F1232DDA /* [CP] Check Pods Manifest.lock */,
 				E30382FD22FB082500FA094D /* Sources */,
 				E30382FE22FB082500FA094D /* Frameworks */,
 				E30382FF22FB082500FA094D /* Resources */,
@@ -135,6 +161,31 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		A852CDDAA3A3FD85F1232DDA /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-TensorFlowLiteDemoObjC-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		E30382FD22FB082500FA094D /* Sources */ = {
@@ -283,6 +334,7 @@
 		};
 		E303831822FB082800FA094D /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0754417CFEF7C5D4A0C84B76 /* Pods-TensorFlowLiteDemoObjC.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -299,6 +351,7 @@
 		};
 		E303831922FB082800FA094D /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = DB5BCB0A97E0C2683D90B1E7 /* Pods-TensorFlowLiteDemoObjC.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
