@@ -29,6 +29,8 @@
 		E303831022FB082800FA094D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E303831222FB082800FA094D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E303831322FB082800FA094D /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		E387720F22FB0F0700A9141E /* mobilenet_quant_v1_224.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = mobilenet_quant_v1_224.tflite; sourceTree = "<group>"; };
+		E387721022FB0F0700A9141E /* labels.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = labels.txt; sourceTree = "<group>"; };
 		F4211E19D87AEA63352AFED1 /* Pods_TensorFlowLiteDemoObjC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TensorFlowLiteDemoObjC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -58,13 +60,13 @@
 				0754417CFEF7C5D4A0C84B76 /* Pods-TensorFlowLiteDemoObjC.debug.xcconfig */,
 				DB5BCB0A97E0C2683D90B1E7 /* Pods-TensorFlowLiteDemoObjC.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
 		E30382F822FB082500FA094D = {
 			isa = PBXGroup;
 			children = (
+				E387720E22FB0EE500A9141E /* Model */,
 				E303830322FB082500FA094D /* TensorFlowLiteDemoObjC */,
 				E303830222FB082500FA094D /* Products */,
 				A3B9EC1F49232FD6FEBC7C2B /* Pods */,
@@ -94,6 +96,15 @@
 				E303831322FB082800FA094D /* main.m */,
 			);
 			path = TensorFlowLiteDemoObjC;
+			sourceTree = "<group>";
+		};
+		E387720E22FB0EE500A9141E /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				E387721022FB0F0700A9141E /* labels.txt */,
+				E387720F22FB0F0700A9141E /* mobilenet_quant_v1_224.tflite */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -338,7 +349,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = UE5YPS7XBK;
 				INFOPLIST_FILE = TensorFlowLiteDemoObjC/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -355,7 +368,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = UE5YPS7XBK;
 				INFOPLIST_FILE = TensorFlowLiteDemoObjC/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
