@@ -14,6 +14,8 @@
 		E303830E22FB082800FA094D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E303830D22FB082800FA094D /* Assets.xcassets */; };
 		E303831122FB082800FA094D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E303830F22FB082800FA094D /* LaunchScreen.storyboard */; };
 		E303831422FB082800FA094D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E303831322FB082800FA094D /* main.m */; };
+		E387721122FB24AE00A9141E /* mobilenet_quant_v1_224.tflite in Resources */ = {isa = PBXBuildFile; fileRef = E387720F22FB0F0700A9141E /* mobilenet_quant_v1_224.tflite */; };
+		E387721222FB24B400A9141E /* labels.txt in Resources */ = {isa = PBXBuildFile; fileRef = E387721022FB0F0700A9141E /* labels.txt */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -167,7 +169,9 @@
 			files = (
 				E303831122FB082800FA094D /* LaunchScreen.storyboard in Resources */,
 				E303830E22FB082800FA094D /* Assets.xcassets in Resources */,
+				E387721222FB24B400A9141E /* labels.txt in Resources */,
 				E303830C22FB082500FA094D /* Main.storyboard in Resources */,
+				E387721122FB24AE00A9141E /* mobilenet_quant_v1_224.tflite in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

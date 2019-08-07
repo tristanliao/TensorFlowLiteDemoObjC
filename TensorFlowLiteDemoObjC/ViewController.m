@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import <AVFoundation/AVFoundation.h>
+#import <TFLTensorFlowLite/TFLTensorFlowLite.h>
 
 @interface ViewController () <AVCaptureVideoDataOutputSampleBufferDelegate>
 
@@ -20,6 +21,8 @@
 @property (weak, nonatomic) IBOutlet UILabel *messageLabel;
 @property (weak, nonatomic) IBOutlet UILabel *fpsLabel;
 
+@property (strong, nonatomic) TFLInterpreter *interpreter;
+
 @end
 
 @implementation ViewController
@@ -27,7 +30,18 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    [self setupInterpreter];
     [self setupCamera];
+}
+
+- (void)setupInterpreter {
+    NSError *error;
+    NSString *path = [[NSBundle mainBundle] pathForResource:@"mobilenet_quant_v1_224" ofType:@"tflite"];
+    self.interpreter = [[TFLInterpreter alloc] initWithModelPath:path error:&error];
+    
+    if (![self.interpreter allocateTensorsWithError:&error]) {
+        NSLog(@"Create interpreter error: %@", error);
+    }
 }
 
 - (void)setupCamera {
@@ -70,7 +84,32 @@
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
     CVImageBufferRef cvImage = CMSampleBufferGetImageBuffer(sampleBuffer);
     CIImage *ciImage = [[CIImage alloc] initWithCVPixelBuffer:cvImage];
-//    [self labelImage: ciImage];
+    NSData *imageData = [self dataFromPixelBufferRef:cvImage];
+    
+    NSError *error;
+    TFLTensor *inputTensor = [self.interpreter inputTensorAtIndex:0 error:&error];
+    [inputTensor copyData:imageData error:&error];
+    
+    [self.interpreter invokeWithError:&error];
+    TFLTensor *outputTensor = [self.interpreter outputTensorAtIndex:0 error:&error];
+    
+    if (error) {
+        NSLog(@"Error: %@", error);
+    }
 }
+
+- (NSData *)dataFromPixelBufferRef:(CVPixelBufferRef)pixelBufferRef {
+    CVPixelBufferLockBaseAddress(pixelBufferRef, 0);
+    void *buffer = CVPixelBufferGetBaseAddress(pixelBufferRef);
+    size_t length = CVPixelBufferGetDataSize(pixelBufferRef);
+    CVPixelBufferUnlockBaseAddress(pixelBufferRef, 0);
+    
+    NSData *data = [NSData dataWithBytes:buffer length:length];
+    return data;
+}
+
+//- (CVPixelBufferRef)cropAndCenteredPixelBufferRef:(CVPixelBufferRef)pixelBufferRef width:(CGFloat)width height:(CGFloat)height {
+//
+//}
 
 @end
