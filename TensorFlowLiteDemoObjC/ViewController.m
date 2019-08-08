@@ -84,7 +84,19 @@
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
     CVImageBufferRef cvImage = CMSampleBufferGetImageBuffer(sampleBuffer);
     CIImage *ciImage = [[CIImage alloc] initWithCVPixelBuffer:cvImage];
-    NSData *imageData = [self dataFromPixelBufferRef:cvImage];
+    
+    
+    size_t height = CVPixelBufferGetHeight(cvImage);
+    size_t width = CVPixelBufferGetWidth(cvImage);
+    
+    CGRect videoRect = CGRectMake(0, 0, width, height);
+    CGSize scaledSize = CGSizeMake(224, 224);
+    
+    // Create a rectangle that meets the output size's aspect ratio, centered in the original video frame
+    CGRect centerCroppingRect = AVMakeRectWithAspectRatioInsideRect(scaledSize, videoRect);
+    
+    CVPixelBufferRef croppedAndScaled = [self createCroppedPixelBufferRef:cvImage cropRect:centerCroppingRect scaleSize:scaledSize context:nil];
+    NSData *imageData = [self dataFromPixelBufferRef:croppedAndScaled];
     
     NSError *error;
     TFLTensor *inputTensor = [self.interpreter inputTensorAtIndex:0 error:&error];
@@ -111,5 +123,35 @@
 //- (CVPixelBufferRef)cropAndCenteredPixelBufferRef:(CVPixelBufferRef)pixelBufferRef width:(CGFloat)width height:(CGFloat)height {
 //
 //}
+
+- (CVPixelBufferRef)createCroppedPixelBufferRef:(CVPixelBufferRef)pixelBuffer cropRect:(CGRect)cropRect scaleSize:(CGSize)scaleSize context:(CIContext *)context {
+    //    assertCropAndScaleValid(pixelBuffer, cropRect, scaleSize);
+    
+    CIImage *image = [CIImage imageWithCVImageBuffer:pixelBuffer];
+    image = [image imageByCroppingToRect:cropRect];
+    
+    CGFloat scaleX = scaleSize.width / CGRectGetWidth(image.extent);
+    CGFloat scaleY = scaleSize.height / CGRectGetHeight(image.extent);
+    
+    image = [image imageByApplyingTransform:CGAffineTransformMakeScale(scaleX, scaleY)];
+    
+    // Due to the way [CIContext:render:toCVPixelBuffer] works, we need to translate the image so the cropped section is at the origin
+    image = [image imageByApplyingTransform:CGAffineTransformMakeTranslation(-image.extent.origin.x, -image.extent.origin.y)];
+    
+    CVPixelBufferRef output = NULL;
+    
+    CVPixelBufferCreate(nil,
+                        CGRectGetWidth(image.extent),
+                        CGRectGetHeight(image.extent),
+                        CVPixelBufferGetPixelFormatType(pixelBuffer),
+                        nil,
+                        &output);
+    
+    if (output != NULL) {
+        [context render:image toCVPixelBuffer:output];
+    }
+    
+    return output;
+}
 
 @end
