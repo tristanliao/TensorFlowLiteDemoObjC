@@ -37,6 +37,7 @@
 - (void)setupInterpreter {
     NSError *error;
     NSString *path = [[NSBundle mainBundle] pathForResource:@"mobilenet_quant_v1_224" ofType:@"tflite"];
+//    NSString *path = [[NSBundle mainBundle] pathForResource:@"PornDetectModel" ofType:@"tflite"];
     self.interpreter = [[TFLInterpreter alloc] initWithModelPath:path error:&error];
     
     if (![self.interpreter allocateTensorsWithError:&error]) {
@@ -95,15 +96,30 @@
     // Create a rectangle that meets the output size's aspect ratio, centered in the original video frame
     CGRect centerCroppingRect = AVMakeRectWithAspectRatioInsideRect(scaledSize, videoRect);
     
-    CVPixelBufferRef croppedAndScaled = [self createCroppedPixelBufferRef:cvImage cropRect:centerCroppingRect scaleSize:scaledSize context:nil];
-    NSData *imageData = [self dataFromPixelBufferRef:croppedAndScaled];
+    CVPixelBufferRef croppedAndScaled = [self createCroppedPixelBufferRef:cvImage
+                                                                 cropRect:centerCroppingRect
+                                                                scaleSize:scaledSize
+                                                                  context:nil];
+    
+//    NSData *imageData = [self dataFromPixelBufferRef:croppedAndScaled];
+    
     
     NSError *error;
     TFLTensor *inputTensor = [self.interpreter inputTensorAtIndex:0 error:&error];
+    NSData *imageData = [self rgbDataFromBuffer:croppedAndScaled
+                                      byteCount:224 * 224 * 3
+                               isModelQuantized:inputTensor.dataType == TFLTensorDataTypeUInt8];
+    
     [inputTensor copyData:imageData error:&error];
     
     [self.interpreter invokeWithError:&error];
+    if (error) {
+        NSLog(@"Error: %@", error);
+    }
+    
     TFLTensor *outputTensor = [self.interpreter outputTensorAtIndex:0 error:&error];
+    NSData *outputData = [outputTensor dataWithError:&error];
+    
     
     if (error) {
         NSLog(@"Error: %@", error);
@@ -125,13 +141,18 @@
 //}
 
 - (CVPixelBufferRef)createCroppedPixelBufferRef:(CVPixelBufferRef)pixelBuffer cropRect:(CGRect)cropRect scaleSize:(CGSize)scaleSize context:(CIContext *)context {
-    //    assertCropAndScaleValid(pixelBuffer, cropRect, scaleSize);
+//    assertCropAndScaleValid(pixelBuffer, cropRect, scaleSize);
     
     CIImage *image = [CIImage imageWithCVImageBuffer:pixelBuffer];
     image = [image imageByCroppingToRect:cropRect];
     
     CGFloat scaleX = scaleSize.width / CGRectGetWidth(image.extent);
     CGFloat scaleY = scaleSize.height / CGRectGetHeight(image.extent);
+    
+    OSType type = CVPixelBufferGetPixelFormatType(pixelBuffer);
+    if (type != kCVPixelFormatType_32BGRA) {
+        return nil;
+    }
     
     image = [image imageByApplyingTransform:CGAffineTransformMakeScale(scaleX, scaleY)];
     
@@ -153,5 +174,103 @@
     
     return output;
 }
+
+- (NSData *)rgbDataFromBuffer:(CVPixelBufferRef)buffer byteCount:(NSUInteger)byteCount isModelQuantized:(BOOL)isModelQuantized {
+    CVPixelBufferLockBaseAddress(buffer, kCVPixelBufferLock_ReadOnly);
+
+    uint8_t *mutableRawPointer = (uint8_t *)CVPixelBufferGetBaseAddress(buffer);
+    size_t count = CVPixelBufferGetDataSize(buffer);
+    
+    // 不用 bufferData 直接用 mutableRawPointer 取 byte 的話會 crash，原因不明。
+    NSData *bufferData = [NSData dataWithBytesNoCopy:mutableRawPointer length:count];
+    uint8_t *bytesPtr = (uint8_t *)[bufferData bytes];
+    
+    NSMutableData *rgbData = [[NSMutableData alloc] initWithCapacity:byteCount];
+    uint8_t rgb[byteCount];
+    
+    NSUInteger index = 0;
+    for (int i = 0; i < count; i++) {
+        if (i % 4 != 3 && index < byteCount) {
+            rgb[index++] = mutableRawPointer[i];
+        }
+    }
+    [rgbData appendBytes:rgb length:byteCount];
+    
+    CVPixelBufferUnlockBaseAddress(buffer, kCVPixelBufferLock_ReadOnly);
+    
+    return rgbData;
+}
+
+//- (CVPixelBufferRef)cropImage:(CVPixelBufferRef)pixelBufferRef scaleSize:(CGSize)scaleSize {
+//    size_t imageWidth = CVPixelBufferGetWidth(pixelBufferRef);
+//    size_t imageHeight = CVPixelBufferGetHeight(pixelBufferRef);
+//    OSType pixelBufferType = CVPixelBufferGetPixelFormatType(pixelBufferRef);
+//
+//    if (pixelBufferType != kCVPixelFormatType_32BGRA) {
+//        return nil;
+//    }
+//
+//    size_t inputImageRowBytes = CVPixelBufferGetBytesPerRow(pixelBufferRef);
+//    size_t imageChannels = 4;
+//
+//    size_t thumbnailSize = MIN(imageWidth, imageHeight);
+//    CVPixelBufferLockBaseAddress(pixelBufferRef, 0);
+//
+//    CGFloat originX = 0;
+//    CGFloat originY = 0;
+//
+//    if (imageWidth > imageHeight) {
+//        originX = (imageWidth - imageHeight) / 2;
+//    } else {
+//        originY = (imageHeight - imageWidth) / 2;
+//    }
+//
+//    // Finds the biggest square in the pixel buffer and advances rows based on it.
+//    void *inputBaseAddress = CVPixelBufferGetBaseAddress(pixelBufferRef);
+//
+//    // Gets vImage Buffer from input image
+//    var inputVImageBuffer = vImage_Buffer(
+//                                          data: inputBaseAddress, height: UInt(thumbnailSize), width: UInt(thumbnailSize),
+//                                          rowBytes: inputImageRowBytes)
+//
+//    size_t thumbnailRowBytes = int(size.width) * imageChannels;
+//    guard  let thumbnailBytes = malloc(Int(size.height) * thumbnailRowBytes) else {
+//        return nil
+//    }
+//
+//    // Allocates a vImage buffer for thumbnail image.
+//    var thumbnailVImageBuffer = vImage_Buffer(data: thumbnailBytes, height: UInt(size.height), width: UInt(size.width), rowBytes: thumbnailRowBytes)
+//
+//    // Performs the scale operation on input image buffer and stores it in thumbnail image buffer.
+//    let scaleError = vImageScale_ARGB8888(&inputVImageBuffer, &thumbnailVImageBuffer, nil, vImage_Flags(0))
+//
+//    CVPixelBufferUnlockBaseAddress(self, CVPixelBufferLockFlags(rawValue: 0))
+//
+//    guard scaleError == kvImageNoError else {
+//        return nil
+//    }
+//
+//    let releaseCallBack: CVPixelBufferReleaseBytesCallback = {mutablePointer, pointer in
+//
+//        if let pointer = pointer {
+//            free(UnsafeMutableRawPointer(mutating: pointer))
+//        }
+//    }
+//
+//    var thumbnailPixelBuffer: CVPixelBuffer?
+//
+//    // Converts the thumbnail vImage buffer to CVPixelBuffer
+//    let conversionStatus = CVPixelBufferCreateWithBytes(
+//                                                        nil, Int(size.width), Int(size.height), pixelBufferType, thumbnailBytes,
+//                                                        thumbnailRowBytes, releaseCallBack, nil, nil, &thumbnailPixelBuffer)
+//
+//    guard conversionStatus == kCVReturnSuccess else {
+//
+//        free(thumbnailBytes)
+//        return nil
+//    }
+//
+//    return thumbnailPixelBuffer
+//}
 
 @end
